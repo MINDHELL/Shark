@@ -214,7 +214,7 @@ async def handle_file_access(client: Client, message: Message, base64_string: st
 
         # 1️⃣ No record or wrong token
         if not verify or verify.get("verify_token") != base64_string:
-            await message.reply_text("⛔ Bypass Detected! You must click the short link first.")
+            await message.reply_text("⛔ SORRY THIS TOKEN IS NOT FOR YOU! please generate new token.")
             await client.send_message(
                 OWNER_ID,
                 f"⚠️ BYPASS ALERT!\n\nUser: {message.from_user.mention}\nUser ID: {user_id}\nFile Token: {base64_string}"
@@ -240,7 +240,7 @@ async def handle_file_access(client: Client, message: Message, base64_string: st
         # 3️⃣ Minimum verification time check
         if elapsed < MIN_VERIFY_TIME:
             await message.reply_text(
-                f"⛔ Bypass Detected! Minimum verification time: {MIN_VERIFY_TIME} seconds."
+                f"⛔ Bypass Detected! Complete shortlink honestly. otherwise Ban.."
             )
             await client.send_message(
                 OWNER_ID,
