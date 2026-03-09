@@ -33,11 +33,11 @@ DB_URI = os.environ.get("DATABASE_URL", "mongodb+srv://aarshhub:wcCgmKoCu2sTsEtv
 DB_NAME = os.environ.get("DATABASE_NAME", "Cluxooh")
 #--------------------------------------------
 FSUB_LINK_EXPIRY = int(os.getenv("FSUB_LINK_EXPIRY", "10"))  # 0 means no expiry
-BAN_SUPPORT = os.environ.get("BAN_SUPPORT", "https://t.me/CodeflixSupport")
+BAN_SUPPORT = os.environ.get("BAN_SUPPORT", "https://t.me/Xsupprtxbot")
 TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "200"))
 #--------------------------------------------
-START_PIC = os.environ.get("START_PIC", "https://telegra.ph/file/ec17880d61180d3312d6a.jpg")
-FORCE_PIC = os.environ.get("FORCE_PIC", "https://telegra.ph/file/e292b12890b8b4b9dcbd1.jpg")
+START_PIC = os.environ.get("START_PIC", "https://i.ibb.co/xSqZT4g1/x.jpg")
+FORCE_PIC = os.environ.get("FORCE_PIC", "https://i.ibb.co/Vp02xtJp/x.jpg")
 
 #--------------------------------------------
 SHORTLINK_URL = os.environ.get("SHORTLINK_URL", "Vplink.in")
@@ -45,7 +45,7 @@ SHORTLINK_API = os.environ.get("SHORTLINK_API", "ee4c6892fd0acac564be8afb9a2db6b
 TUT_VID = os.environ.get("TUT_VID","https://t.me/allvidsbackup3/3")
 SHORT_MSG = "<b>⌯ Here is Your Download Link, Must Watch Tutorial Before Clicking On Download...</b>"
 
-SHORTENER_PIC = os.environ.get("SHORTENER_PIC", "https://telegra.ph/file/ec17880d61180d3312d6a.jpg")
+SHORTENER_PIC = os.environ.get("SHORTENER_PIC", "https://i.ibb.co/tM1Fz2fK/x.jpg")
 #--------------------------------------------
 
 #--------------------------------------------
