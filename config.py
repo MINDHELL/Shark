@@ -18,14 +18,14 @@ from logging.handlers import RotatingFileHandler
 #rohit_1888 on Tg
 #--------------------------------------------
 #Bot token @Botfather
-TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "7411785952:AAHE7utWPpx73UHvIh7zgeA-a_KUGOCtXKQ")
+TG_BOT_TOKEN = os.environ.get("TG_BOT_TOKEN", "8460769837:AAFVv6GDtzSuKxJLAKiqvCq1Ldx66KO21Es")
 APP_ID = int(os.environ.get("APP_ID", "37371391")) #Your API ID from my.telegram.org
 API_HASH = os.environ.get("API_HASH", "37895f967d284f6781f99e9beef21ebf") #Your API Hash from my.telegram.org
 #--------------------------------------------
 
-CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-1003510433118")) #Your db channel Id
+CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-3758477609")) #Your db channel Id
 OWNER = os.environ.get("OWNER", "Xsupprt4bot") # Owner username without @
-OWNER_ID = int(os.environ.get("OWNER_ID", "7092220636")) # Owner id
+OWNER_ID = int(os.environ.get("OWNER_ID", "8635942785")) # Owner id
 #--------------------------------------------
 PORT = os.environ.get("PORT", "8001")
 #--------------------------------------------
