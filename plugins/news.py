@@ -77,19 +77,19 @@ async def auto_news():
 
 # ===== COMMANDS =====
 
-@app.on_message(filters.command("start") & filters.user(ADMIN_ID))
+@app.on_message(filters.command("startnews") & filters.user(ADMIN_ID))
 async def start(_, msg):
     global running
     running = True
     await msg.reply("✅ Bot started")
 
-@app.on_message(filters.command("stop") & filters.user(ADMIN_ID))
+@app.on_message(filters.command("stopnews") & filters.user(ADMIN_ID))
 async def stop(_, msg):
     global running
     running = False
     await msg.reply("⛔ Bot stopped")
 
-@app.on_message(filters.command("latest"))
+@app.on_message(filters.command("latestnews"))
 async def latest(_, msg):
     news = get_news()
     for t, l in news[:5]:
