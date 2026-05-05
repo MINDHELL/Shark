@@ -2,10 +2,9 @@ import asyncio
 import requests
 import json
 import os
-from pyrogram import Client, filters
-from config import OWNER_ID, ADMIN_ID, APP_ID, API_HASH, TG_BOT_TOKEN
+from pyrogram import filters
 from bot import Bot as app
-
+from config import ADMIN_ID, NEWS_API_KEY
 
 DATA_FILE = "data.json"
 
@@ -28,50 +27,75 @@ data = load_data()
 sent_news = set()
 running = True
 
-# ===== APP =====
-
-# ===== HELPERS =====
-def is_admin(user_id):
-    return user_id == ADMIN_ID
-
+# ===== GET NEWS =====
 def get_news():
-    url = f"https://newsapi.org/v2/top-headlines?country=in&category={data['category']}&apiKey=07b674b8dafc4539910ce689e9d64059"
+    q = data["category"] if data["category"] != "general" else "india"
+
+    url = f"https://newsapi.org/v2/everything?q={q}&sortBy=publishedAt&language=en&apiKey={NEWS_API_KEY}"
     res = requests.get(url).json()
+
+    if res.get("status") != "ok":
+        print("API Error:", res)
+        return []
 
     news = []
     for a in res.get("articles", []):
-        title = a["title"]
-        link = a["url"]
+        title = a.get("title")
+        link = a.get("url")
+        image = a.get("urlToImage")
 
-        if title not in sent_news:
-            news.append((title, link))
+        if title and title not in sent_news:
+            news.append((title, link, image))
             sent_news.add(title)
+
+    # prevent memory overflow
+    if len(sent_news) > 200:
+        sent_news.clear()
 
     return news
 
-async def send_to_channels(msg):
+# ===== SEND TO CHANNELS =====
+async def send_to_channels(title, link, image):
     for ch in data["channels"]:
         try:
-            await app.send_message(ch, msg)
-            await asyncio.sleep(1)
+            caption = f"📰 {title}\n\n🔗 Read more: {link}"
+
+            if image:
+                await app.send_photo(
+                    chat_id=ch,
+                    photo=image,
+                    caption=caption
+                )
+            else:
+                await app.send_message(
+                    chat_id=ch,
+                    text=caption
+                )
+
+            await asyncio.sleep(2)
+
         except Exception as e:
-            print(f"Error {ch}: {e}")
+            print(f"Error sending to {ch}:", e)
 
 # ===== AUTO LOOP =====
 async def auto_news():
     global running
+    print("AUTO LOOP STARTED")
+
     while True:
         if running and data["channels"]:
             try:
                 news = get_news()
 
-                for title, link in news[:5]:
-                    msg = f"📰 {title}\n\n🔗 {link}"
-                    await send_to_channels(msg)
+                for title, link, image in news[:5]:
+                    await send_to_channels(title, link, image)
 
                 print("News sent")
+
             except Exception as e:
+                import traceback
                 print("Error:", e)
+                traceback.print_exc()
 
         await asyncio.sleep(data["interval"])
 
@@ -81,19 +105,28 @@ async def auto_news():
 async def start(_, msg):
     global running
     running = True
-    await msg.reply("✅ Bot started")
+    await msg.reply("✅ News started")
 
 @app.on_message(filters.command("stopnews") & filters.user(ADMIN_ID))
 async def stop(_, msg):
     global running
     running = False
-    await msg.reply("⛔ Bot stopped")
+    await msg.reply("⛔ News stopped")
 
 @app.on_message(filters.command("latestnews"))
 async def latest(_, msg):
     news = get_news()
-    for t, l in news[:5]:
-        await msg.reply(f"{t}\n{l}")
+
+    if not news:
+        return await msg.reply("No news ❌")
+
+    for title, link, image in news[:3]:
+        caption = f"📰 {title}\n\n🔗 {link}"
+
+        if image:
+            await msg.reply_photo(photo=image, caption=caption)
+        else:
+            await msg.reply(caption)
 
 # ===== CHANNEL MANAGEMENT =====
 
@@ -106,6 +139,9 @@ async def add_channel(_, msg):
 
     if ch in data["channels"]:
         return await msg.reply("Already added")
+
+    if not ch.startswith("@") and not ch.startswith("-100"):
+        return await msg.reply("Invalid channel format")
 
     data["channels"].append(ch)
     save_data()
@@ -136,6 +172,9 @@ async def list_channels(_, msg):
 
 @app.on_message(filters.command("settime") & filters.user(ADMIN_ID))
 async def set_time(_, msg):
+    if len(msg.command) < 2:
+        return await msg.reply("Usage: /settime 120")
+
     try:
         t = int(msg.command[1])
         if t < 30:
@@ -144,13 +183,14 @@ async def set_time(_, msg):
         data["interval"] = t
         save_data()
         await msg.reply(f"⏱ Set to {t} sec")
+
     except:
-        await msg.reply("Usage: /settime 120")
+        await msg.reply("Invalid number")
 
 @app.on_message(filters.command("setcategory") & filters.user(ADMIN_ID))
 async def set_category(_, msg):
     if len(msg.command) < 2:
-        return await msg.reply("Usage: /setcategory tech/business")
+        return await msg.reply("Usage: /setcategory keyword")
 
     data["category"] = msg.command[1]
     save_data()
@@ -162,31 +202,26 @@ async def status(_, msg):
         f"📊 STATUS\n\nChannels: {len(data['channels'])}\nInterval: {data['interval']} sec\nCategory: {data['category']}\nRunning: {running}"
     )
 
+# ===== TEST =====
+
 @app.on_message(filters.command("testnews"))
 async def test_news(_, msg):
     news = get_news()
-    print("News fetched:", news)
 
     if not news:
         return await msg.reply("No news fetched ❌")
 
-    for t, l in news[:3]:
-        await msg.reply(f"{t}\n{l}")
+    for title, link, image in news[:3]:
+        caption = f"📰 {title}\n\n🔗 {link}"
 
+        if image:
+            await msg.reply_photo(photo=image, caption=caption)
+        else:
+            await msg.reply(caption)
 
+# ===== START LOOP =====
 
-
-# ===== RUN ====
-
-async def main():
-    await app.start()
-    print("Bot running...")
+@app.on_message(filters.command("startloop") & filters.user(ADMIN_ID))
+async def start_loop_cmd(_, msg):
     asyncio.create_task(auto_news())
-    await asyncio.Event().wait()
-
-if __name__ == "__main__":
-    import asyncio
-    loop = asyncio.get_event_loop()
-    loop.create_task(main())
-    loop.run_forever()
-
+    await msg.reply("🚀 Auto news loop started")
