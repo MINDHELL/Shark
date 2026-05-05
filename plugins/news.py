@@ -25,7 +25,7 @@ def save_data():
 
 data = load_data()
 sent_news = set()
-running = True
+running = False   # start OFF by default
 
 # ===== GET NEWS =====
 def get_news():
@@ -49,20 +49,20 @@ def get_news():
 
     return news
 
-# ===== SEND TO CHANNELS =====
-async def send_to_channels(title, link, image):
+# ===== SEND =====
+async def send_to_channels(client, title, link, image):
     for ch in data["channels"]:
         try:
             caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
             if image:
-                await app.send_photo(
+                await client.send_photo(
                     chat_id=ch,
                     photo=image,
                     caption=caption
                 )
             else:
-                await app.send_message(
+                await client.send_message(
                     chat_id=ch,
                     text=caption,
                     disable_web_page_preview=True
@@ -74,7 +74,7 @@ async def send_to_channels(title, link, image):
             print(f"Error sending to {ch}:", e)
 
 # ===== AUTO LOOP =====
-async def auto_news():
+async def auto_news(client):
     global running
     print("AUTO LOOP STARTED")
 
@@ -89,11 +89,10 @@ async def auto_news():
 
                     sent_news.add(title)
 
-                    # prevent memory overflow
                     if len(sent_news) > 200:
                         sent_news.clear()
 
-                    await send_to_channels(title, link, image)
+                    await send_to_channels(client, title, link, image)
 
                 print("News sent")
 
@@ -106,10 +105,18 @@ async def auto_news():
 
 # ===== COMMANDS =====
 
+loop_started = False  # prevent multiple loops
+
 @app.on_message(filters.command("startnews") & filters.user(ADMIN_ID))
-async def start(_, msg):
-    global running
+async def start(client, msg):
+    global running, loop_started
+
     running = True
+
+    if not loop_started:
+        asyncio.create_task(auto_news(client))
+        loop_started = True
+
     await msg.reply("✅ News started")
 
 @app.on_message(filters.command("stopnews") & filters.user(ADMIN_ID))
@@ -119,7 +126,7 @@ async def stop(_, msg):
     await msg.reply("⛔ News stopped")
 
 @app.on_message(filters.command("latestnews"))
-async def latest(_, msg):
+async def latest(client, msg):
     news = get_news()
 
     if not news:
@@ -129,9 +136,9 @@ async def latest(_, msg):
         caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
         if image:
-            await msg.reply_photo(photo=image, caption=caption)
+            await client.send_photo(msg.chat.id, image, caption=caption)
         else:
-            await msg.reply(caption, disable_web_page_preview=True)
+            await client.send_message(msg.chat.id, caption, disable_web_page_preview=True)
 
 # ===== CHANNEL MANAGEMENT =====
 
@@ -144,9 +151,6 @@ async def add_channel(_, msg):
 
     if ch in data["channels"]:
         return await msg.reply("Already added")
-
-    if not ch.startswith("@") and not ch.startswith("-100"):
-        return await msg.reply("Invalid channel format")
 
     data["channels"].append(ch)
     save_data()
@@ -177,9 +181,6 @@ async def list_channels(_, msg):
 
 @app.on_message(filters.command("settime") & filters.user(ADMIN_ID))
 async def set_time(_, msg):
-    if len(msg.command) < 2:
-        return await msg.reply("Usage: /settime 120")
-
     try:
         t = int(msg.command[1])
         if t < 30:
@@ -190,7 +191,7 @@ async def set_time(_, msg):
         await msg.reply(f"⏱ Set to {t} sec")
 
     except:
-        await msg.reply("Invalid number")
+        await msg.reply("Usage: /settime 120")
 
 @app.on_message(filters.command("setcategory") & filters.user(ADMIN_ID))
 async def set_category(_, msg):
@@ -210,7 +211,7 @@ async def status(_, msg):
 # ===== TEST =====
 
 @app.on_message(filters.command("testnews"))
-async def test_news(_, msg):
+async def test_news(client, msg):
     news = get_news()
 
     if not news:
@@ -220,15 +221,6 @@ async def test_news(_, msg):
         caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
         if image:
-            await msg.reply_photo(photo=image, caption=caption)
+            await client.send_photo(msg.chat.id, image, caption=caption)
         else:
-            await msg.reply(caption, disable_web_page_preview=True)
-
-# ===== AUTO START LOOP =====
-
-async def init_news():
-    await asyncio.sleep(5)
-    print("Starting auto news loop...")
-    asyncio.create_task(auto_news())
-
-asyncio.get_event_loop().create_task(init_news())
+            await client.send_message(msg.chat.id, caption, disable_web_page_preview=True)
