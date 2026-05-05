@@ -27,6 +27,8 @@ CHANNEL_ID = int(os.environ.get("CHANNEL_ID", "-3758477609")) #Your db channel I
 OWNER = os.environ.get("OWNER", "Xsupprt4bot") # Owner username without @
 OWNER_ID = int(os.environ.get("OWNER_ID", "8635942785")) # Owner id
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "8635942785"))
+NEWS_API_KEY = "07b674b8dafc4539910ce689e9d64059"
+
 
 #--------------------------------------------
 PORT = os.environ.get("PORT", "8001")
