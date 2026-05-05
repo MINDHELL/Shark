@@ -44,13 +44,8 @@ def get_news():
         link = a.get("url")
         image = a.get("urlToImage")
 
-        if title and title not in sent_news:
+        if title:
             news.append((title, link, image))
-            sent_news.add(title)
-
-    # prevent memory overflow
-    if len(sent_news) > 200:
-        sent_news.clear()
 
     return news
 
@@ -58,7 +53,7 @@ def get_news():
 async def send_to_channels(title, link, image):
     for ch in data["channels"]:
         try:
-            caption = f"📰 {title}\n\n🔗 Read more: {link}"
+            caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
             if image:
                 await app.send_photo(
@@ -69,7 +64,8 @@ async def send_to_channels(title, link, image):
             else:
                 await app.send_message(
                     chat_id=ch,
-                    text=caption
+                    text=caption,
+                    disable_web_page_preview=True
                 )
 
             await asyncio.sleep(2)
@@ -87,7 +83,16 @@ async def auto_news():
             try:
                 news = get_news()
 
-                for title, link, image in news[:5]:
+                for title, link, image in news:
+                    if title in sent_news:
+                        continue
+
+                    sent_news.add(title)
+
+                    # prevent memory overflow
+                    if len(sent_news) > 200:
+                        sent_news.clear()
+
                     await send_to_channels(title, link, image)
 
                 print("News sent")
@@ -121,12 +126,12 @@ async def latest(_, msg):
         return await msg.reply("No news ❌")
 
     for title, link, image in news[:3]:
-        caption = f"📰 {title}\n\n🔗 {link}"
+        caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
         if image:
             await msg.reply_photo(photo=image, caption=caption)
         else:
-            await msg.reply(caption)
+            await msg.reply(caption, disable_web_page_preview=True)
 
 # ===== CHANNEL MANAGEMENT =====
 
@@ -212,16 +217,18 @@ async def test_news(_, msg):
         return await msg.reply("No news fetched ❌")
 
     for title, link, image in news[:3]:
-        caption = f"📰 {title}\n\n🔗 {link}"
+        caption = f"📰 {title}\n\n👉 Read more:\n{link}"
 
         if image:
             await msg.reply_photo(photo=image, caption=caption)
         else:
-            await msg.reply(caption)
+            await msg.reply(caption, disable_web_page_preview=True)
 
-# ===== START LOOP =====
+# ===== AUTO START LOOP =====
 
-@app.on_message(filters.command("startloop") & filters.user(ADMIN_ID))
-async def start_loop_cmd(_, msg):
+async def init_news():
+    await asyncio.sleep(5)
+    print("Starting auto news loop...")
     asyncio.create_task(auto_news())
-    await msg.reply("🚀 Auto news loop started")
+
+asyncio.get_event_loop().create_task(init_news())
