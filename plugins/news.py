@@ -162,14 +162,17 @@ async def status(_, msg):
         f"📊 STATUS\n\nChannels: {len(data['channels'])}\nInterval: {data['interval']} sec\nCategory: {data['category']}\nRunning: {running}"
     )
 
-# ===== RUN =====
+# ===== RUN ====
 
 async def main():
     await app.start()
     print("Bot running...")
-
     asyncio.create_task(auto_news())
-
     await asyncio.Event().wait()
 
-app.run(main())
+if __name__ == "__main__":
+    import asyncio
+    loop = asyncio.get_event_loop()
+    loop.create_task(main())
+    loop.run_forever()
+
