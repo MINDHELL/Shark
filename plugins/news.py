@@ -4,6 +4,7 @@ import json
 import os
 from pyrogram import Client, filters
 from config import OWNER_ID, ADMIN_ID, APP_ID, API_HASH, TG_BOT_TOKEN
+from bot import Bot as app
 
 
 DATA_FILE = "data.json"
@@ -28,7 +29,6 @@ sent_news = set()
 running = True
 
 # ===== APP =====
-app = Client("news_bot", api_id=APP_ID, api_hash=API_HASH, bot_token=TG_BOT_TOKEN)
 
 # ===== HELPERS =====
 def is_admin(user_id):
