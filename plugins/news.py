@@ -162,6 +162,20 @@ async def status(_, msg):
         f"📊 STATUS\n\nChannels: {len(data['channels'])}\nInterval: {data['interval']} sec\nCategory: {data['category']}\nRunning: {running}"
     )
 
+@app.on_message(filters.command("testnews"))
+async def test_news(_, msg):
+    news = get_news()
+    print("News fetched:", news)
+
+    if not news:
+        return await msg.reply("No news fetched ❌")
+
+    for t, l in news[:3]:
+        await msg.reply(f"{t}\n{l}")
+
+
+
+
 # ===== RUN ====
 
 async def main():
