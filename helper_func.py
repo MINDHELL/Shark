@@ -224,10 +224,45 @@ def get_exp_time(seconds):
 #
 
 
-async def get_shortlink(url, api, link):
-    shortzy = Shortzy(api_key=api, base_site=url)
-    link = await shortzy.convert(link)
-    return link
+async def get_shortlink(site, api, url, alias=None):
+
+    import aiohttp
+
+    try:
+
+        # If alias exists
+        if alias:
+            api_url = (
+                f"https://{site}/api"
+                f"?api={api}"
+                f"&url={url}"
+                f"&alias={alias}"
+            )
+
+        # Without alias
+        else:
+            api_url = (
+                f"https://{site}/api"
+                f"?api={api}"
+                f"&url={url}"
+            )
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, ssl=False) as response:
+
+                data = await response.json()
+
+                if data.get("status") == "success":
+                    return data.get("shortenedUrl")
+
+                print("Shortener Error:", data)
+                return None
+
+    except Exception as e:
+        print("Shortlink Exception:", e)
+        return None
+
+
 
 
 subscribed = filters.create(is_subscribed)
