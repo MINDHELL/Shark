@@ -74,7 +74,24 @@ async def short_url(client: Client, message: Message, base64_string):
     prem_link = f"https://t.me/{client.username}?start=yu3elk{base64_string}7"
 
     # Generate short link
-    short_link = await get_shortlink(shortener["url"], shortener["api"], prem_link)
+    # Create custom alias
+alias = f"__{base64_string[:8]}__"
+
+# Generate shortlink with alias
+short_link = await get_shortlink(
+    shortener["url"],
+    shortener["api"],
+    prem_link,
+    alias=alias
+)
+
+# Fallback if alias already exists
+if not short_link:
+    short_link = await get_shortlink(
+        shortener["url"],
+        shortener["api"],
+        prem_link
+    )
     if not short_link:
         return await message.reply_text("⚠️ Could not generate short link. Please try again later.")
 
