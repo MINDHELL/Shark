@@ -63,42 +63,44 @@ SHORTENERS = [
 async def short_url(client: Client, message: Message, base64_string):
     user_id = message.from_user.id
 
-    # Fetch current shortener index from DB (default 0)
+    # Fetch current shortener index from DB
     verify_data = await db.get_verify_status(user_id)
+
     current_index = 0
     if verify_data:
         current_index = verify_data.get("shortener_index", 0)
 
-    # Pick the shortener
+    # Pick current shortener
     shortener = SHORTENERS[current_index]
+
     prem_link = f"https://t.me/{client.username}?start=yu3elk{base64_string}7"
 
-    # Generate short link
-    # Generate short link
-# Create custom alias
-alias = f"__{base64_string[:8]}__"
+    # Create alias
+    alias = f"__{base64_string[:8]}__"
 
-# Generate shortlink with alias
-short_link = await get_shortlink(
-    shortener["url"],
-    shortener["api"],
-    prem_link,
-    alias=alias
-)
-
-# Fallback if alias already exists
-if not short_link:
+    # Generate shortlink with alias
     short_link = await get_shortlink(
         shortener["url"],
         shortener["api"],
-        prem_link
+        prem_link,
+        alias=alias
     )
+
+    # Fallback if alias already exists
     if not short_link:
-        return await message.reply_text("⚠️ Could not generate short link. Please try again later.")
+        short_link = await get_shortlink(
+            shortener["url"],
+            shortener["api"],
+            prem_link
+        )
 
-    
+    # Final failure
+    if not short_link:
+        return await message.reply_text(
+            "⚠️ Could not generate short link. Please try again later."
+        )
 
-    # Store verification token with current shortener index
+    # Save verification data
     await db.update_verify_status(
         user_id,
         verify_token=base64_string,
@@ -108,7 +110,7 @@ if not short_link:
         shortener_index=current_index
     )
 
-    # Send buttons
+    # Buttons
     buttons = [
         [
             InlineKeyboardButton("ᴅᴏᴡɴʟᴏᴀᴅ", url=short_link),
@@ -119,11 +121,13 @@ if not short_link:
         ]
     ]
 
+    # Send message
     await message.reply_photo(
         photo=SHORTENER_PIC,
         caption=SHORT_MSG,
         reply_markup=InlineKeyboardMarkup(buttons)
     )
+
 
 
 
