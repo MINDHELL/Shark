@@ -69,7 +69,7 @@ async def short_url(client: Client, message: Message, base64_string):
     current_index = 0
     if verify_data:
         current_index = verify_data.get("shortener_index", 0)
-
+        
     # Pick current shortener
     shortener = SHORTENERS[current_index]
 
