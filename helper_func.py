@@ -252,6 +252,13 @@ async def get_shortlink(site, api, url, alias=None):
 
                 data = await response.json()
 
+print("\n========== VPLINK DEBUG ==========")
+print("Alias:", alias)
+print("API URL:", api_url)
+print("Response:", data)
+print("==================================\n")
+
+
                 if data.get("status") == "success":
                     return data.get("shortenedUrl")
 
