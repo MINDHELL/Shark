@@ -248,26 +248,23 @@ async def get_shortlink(site, api, url, alias=None):
             )
 
         async with aiohttp.ClientSession() as session:
-            async with session.get(api_url, ssl=False) as response:
+    async with session.get(api_url, ssl=False) as response:
 
-                data = await response.json()
+        data = await response.json()
 
-print("\n========== VPLINK DEBUG ==========")
-print("Alias:", alias)
-print("API URL:", api_url)
-print("Response:", data)
-print("==================================\n")
+        print("\n========== VPLINK DEBUG ==========")
+        print("Alias:", alias)
+        print("API URL:", api_url)
+        print("Response:", data)
+        print("==================================\n")
 
+        if data.get("status") == "success":
+            return data.get("shortenedUrl")
 
-                if data.get("status") == "success":
-                    return data.get("shortenedUrl")
-
-                print("Shortener Error:", data)
-                return None
-
-    except Exception as e:
-        print("Shortlink Exception:", e)
+        print("Shortener Error:", data)
         return None
+
+
 
 
 
