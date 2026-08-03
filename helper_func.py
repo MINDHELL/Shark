@@ -1,6 +1,6 @@
 #(©)CodeFlix_Bots
 #rohit_1888 on Tg #Dont remove this line
-
+print("🔥 HELPER_FUNC.PY LOADED")
 import base64
 import re
 import asyncio
