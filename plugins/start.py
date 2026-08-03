@@ -3,7 +3,7 @@
 # Project: https://github.com/Codeflix-Bots/FileStore
 # License: MIT
 #=====================================================================================##
-
+print("🔥 START.PY LOADED")
 import asyncio
 import time
 from datetime import datetime, timedelta
