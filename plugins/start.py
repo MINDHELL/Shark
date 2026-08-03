@@ -16,6 +16,8 @@ from config import *
 from helper_func import *
 from database.database import *
 from database.db_premium import *
+import asyncio
+from pytz import timezone
 
 # ------------------------------
 # Constants
@@ -399,7 +401,7 @@ async def handle_file_access(client: Client, message: Message, base64_string: st
         ) if reload_url else None
 
         try:
-            await notification_.edit(
+            await notification.edit(
                 "<b>Your video/file was successfully deleted!</b>",
                 reply_markup=keyboard
             )
