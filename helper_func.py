@@ -12,7 +12,7 @@ from pyrogram.errors.exceptions.bad_request_400 import UserNotParticipant
 from shortzy import Shortzy
 from pyrogram.errors import FloodWait
 from database.database import *
-
+print("✅ LOADED UPDATED helper_func.py")
 
 
 # Don't Remove Credit @CodeFlix_Bots, @rohit_1888
@@ -222,6 +222,7 @@ def get_exp_time(seconds):
 #
 # All rights reserved.
 #
+print("✅ get_shortlink() called")
 
 
 async def get_shortlink(site, api, url, alias=None):
