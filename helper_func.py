@@ -246,28 +246,31 @@ async def get_shortlink(site, api, url, alias=None):
                 f"?api={api}"
                 f"&url={url}"
             )
-            
-            
-            async with aiohttp.ClientSession() as session:
-                async with session.get(api_url, ssl=False) as response:
-                    
-                    data = await response.json()
-                    
-                    print("\n========== VPLINK DEBUG ==========")
-                    print("Alias:", alias)
-                    print("API URL:", api_url)
-                    print("Response:", data)
-                    print("==================================\n")
-                    
-                    if data.get("status") == "success":
-                        return data.get("shortenedUrl")
-                        
-                        print("Shortener Error:", data)
-                        return None
-                        
-                        subscribed = filters.create(is_subscribed)
-                        admin = filters.create(check_admin)
-                        
+
+        async with aiohttp.ClientSession() as session:
+            async with session.get(api_url, ssl=False) as response:
+
+                data = await response.json()
+
+                print("\n========== VPLINK DEBUG ==========")
+                print("Alias:", alias)
+                print("API URL:", api_url)
+                print("Response:", data)
+                print("==================================\n")
+
+                if data.get("status") == "success":
+                    return data.get("shortenedUrl")
+
+                print("Shortener Error:", data)
+                return None
+
+    except Exception as e:
+        print("Shortlink Exception:", e)
+        return None
+        
+        subscribed = filters.create(is_subscribed)
+        admin = filters.create(check_admin)
+        
 
 #rohit_1888 on Tg :
 
