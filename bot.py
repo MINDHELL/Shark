@@ -9,7 +9,7 @@
 #
 # All rights reserved.
 #
-
+print("🔥 BOT.PY LOADED")
 from aiohttp import web
 from plugins import web_server
 import asyncio
