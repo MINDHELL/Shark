@@ -264,12 +264,17 @@ async def get_shortlink(site, api, url, alias=None):
                 print("Shortener Error:", data)
                 return None
 
-    except Exception as e:
+        except Exception as e:
         print("Shortlink Exception:", e)
         return None
-        
-        subscribed = filters.create(is_subscribed)
-        admin = filters.create(check_admin)
+
+
+subscribed = filters.create(is_subscribed)
+admin = filters.create(check_admin)
+
+#rohit_1888 on Tg :
+
+# Don't Remove Credit...
         
 
 #rohit_1888 on Tg :
