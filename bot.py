@@ -1,4 +1,3 @@
-
 # Don't Remove Credit @CodeFlix_Bots, @rohit_1888
 # Ask Doubt on telegram @CodeflixSupport
 #
@@ -65,7 +64,9 @@ class Bot(Client):
             name="Bot",
             api_hash=API_HASH,
             api_id=APP_ID,
-            plugins= None,
+            plugins={
+                "root": "plugins"
+            },
             workers=TG_BOT_WORKERS,
             bot_token=TG_BOT_TOKEN
         )
