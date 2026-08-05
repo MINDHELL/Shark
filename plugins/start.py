@@ -78,7 +78,7 @@ async def short_url(client: Client, message: Message, base64_string):
     prem_link = f"https://t.me/{client.username}?start=yu3elk{base64_string}7"
 
     # Create alias
-    alias = f"__{base64_string[:8]}__"
+    alias = f"__{base64_string[:8]}__test500__"
 
     # Generate shortlink with alias
     short_link = await get_shortlink(
