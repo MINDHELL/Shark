@@ -79,7 +79,7 @@ async def short_url(client: Client, message: Message, base64_string):
 
     # Create alias
     import secrets
-    alias = f"fs_{secrets.token_hex(5)}"
+    alias = f"__fs_{secrets.token_hex(5)}__"
     
     # Generate shortlink with alias
     short_link = await get_shortlink(
