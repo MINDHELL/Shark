@@ -1,7 +1,3 @@
-print("🔥 THIS IS THE NEW MAIN.PY")
-
-raise Exception("STOP HERE")
-
 from bot import Bot
 import pyrogram.utils
 
